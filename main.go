@@ -2,6 +2,7 @@ package main
 
 import (
 	"net/http"
+	"strconv"
 
 	"example.com/mouse-counter/views"
 	"github.com/a-h/templ"
@@ -17,9 +18,16 @@ func RenderComponent(c echo.Context, status int, cmp templ.Component) error {
 
 func main() {
 	e := echo.New()
+	e.Static("/static", "assets")
 
 	e.GET("/", func(c echo.Context) error {
-		return RenderComponent(c, http.StatusOK, views.Hello("World"))
+		return RenderComponent(c, http.StatusOK, views.Page())
+	})
+
+	count := 0
+	e.POST("/mouse_entered", func(c echo.Context) error {
+		count++
+		return RenderComponent(c, http.StatusOK, views.Count(strconv.Itoa(count)))
 	})
 
 	e.Logger.Fatal(e.Start(":8080"))
